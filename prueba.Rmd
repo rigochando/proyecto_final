@@ -1,0 +1,59 @@
+---
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Analisis del precio de las acciones de Google
+
+
+```{r cars}
+GG <- read.csv("GOOG.csv", header=T, dec=".", sep=",")
+GG.ts<-ts(GG$Close,start=c(2005,07),freq=12)
+```
+
+
+Grafico de la serie temporal
+
+```{r pressure, echo=FALSE}
+plot(GG.ts,type="l",lwd=2, col="red", 
+     xlab="Tiempo", ylab="Precio",main="Precio al cierre")
+```
+
+
+
+Grafico de las componentes de la serie temporal
+
+```{r g1, echo=FALSE}
+plot(stl(GG.ts,s.window="periodic"))
+```
+
+Predicción con el metodo de Holt-Winters
+
+```{r c1}
+GG.hw <- HoltWinters(GG.ts)
+```
+
+Grafico de los datos observados y ajustado
+
+```{r g2, echo=FALSE}
+plot(GG.hw, col = "blue", col.predicted = "red")
+```
+
+Predicción del precio de las acciones para los proximos 24 meses con intervalos de confianza de 80% y 95%
+
+```{r c2}
+#install.packages("forecast")
+library(forecast)
+infy.fore <- forecast(GG.hw, h=24)
+infy.fore$lower
+infy.fore$upper
+
+```
+
+```{r g3, echo=FALSE}
+plot(infy.fore)
+```
+
+
